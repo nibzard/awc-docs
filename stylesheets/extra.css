@@ -1,0 +1,70 @@
+/* AWC docs — brand-neutral polish on top of the mkdocs-material defaults.
+   Keep this small: most styling comes from the Material theme palette. */
+
+:root {
+  --awc-accent: #3f51b5;
+}
+
+/* Give wide tables (config, CLI, metrics) room to breathe. */
+.md-typeset__table {
+  min-width: 100%;
+}
+.md-typeset table:not([class]) {
+  font-size: 0.78rem;
+  display: table;
+  width: 100%;
+}
+
+/* Monospace inline code is slightly lighter weight for readability. */
+.md-typeset code {
+  word-break: break-word;
+}
+
+/* Landing page: a four-card Diátaxis grid.
+   Markup uses <div class="diataxis-grid"> with <a class="card"> children. */
+.diataxis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.diataxis-grid .card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.4rem;
+  color: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+.diataxis-grid .card:hover {
+  border-color: var(--awc-accent);
+  transform: translateY(-2px);
+}
+.diataxis-grid .card h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+.diataxis-grid .card .tag {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--awc-accent);
+  font-weight: 600;
+}
+.diataxis-grid .card p {
+  margin: 0;
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+/* Make the "stub" admonition visually distinct so unfinished pages are obvious. */
+.md-typeset .admonition.stub,
+.md-typeset details.stub {
+  border-color: #ff8f00;
+}
+.md-typeset .stub > .admonition-title,
+.md-typeset .stub > summary {
+  background-color: #ff8f001a;
+}

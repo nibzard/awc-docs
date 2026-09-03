@@ -1,0 +1,5071 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Object-storage-backed, content-addressed workspace system for high-fan-out coding-agent fleets. Prepare once, fork many, fetch common bytes once, and store only unique changes.">
+      
+      
+        <meta name="author" content="AWC contributors">
+      
+      
+        <link rel="canonical" href="https://nibzard.github.io/awc-docs/reference/data-model/">
+      
+      
+        <link rel="prev" href="../api/grpc/">
+      
+      
+        <link rel="next" href="../on-disk-format/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Data model - AWC — Agent Workspace Cache</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#data-model-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AWC — Agent Workspace Cache" class="md-header__button md-logo" aria-label="AWC — Agent Workspace Cache" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AWC — Agent Workspace Cache
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Data model
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/nibzard/awc-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    nibzard/awc-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../how-to/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  How-to guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../explanation/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Explanation
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AWC — Agent Workspace Cache" class="md-nav__button md-logo" aria-label="AWC — Agent Workspace Cache" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    AWC — Agent Workspace Cache
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/nibzard/awc-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    nibzard/awc-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../tutorials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/get-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Your first workspace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/see-the-economics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    See the economics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/break-it-on-purpose/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Break it on purpose
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/wire-a-ci-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wire a CI pipeline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../how-to/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How-to guides
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    How-to guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Snapshots
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Snapshots
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/import-from-directory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import from a directory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/import-from-git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import from Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/import-from-tar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Import from a tar archive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workspaces
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Workspaces
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/fork-a-workspace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fork a workspace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/mount-a-workspace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mount a workspace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/checkpoint-a-workspace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Checkpoint a workspace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/diff-and-export/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diff and export
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/unmount-a-workspace/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unmount a workspace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deploy
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Deploy
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/install/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Install AWC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/run-locally/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run locally
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/deploy-proxmox/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deploy on Proxmox VE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/deploy-kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deploy on Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/deploy-vm-systemd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deploy on a VM with systemd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operate
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Operate
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/upgrade/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Upgrade a deployment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/drain-and-restart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Drain and restart a host
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/rotate-credentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rotate credentials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/run-garbage-collection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run garbage collection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/backup-and-restore-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Back up and restore PostgreSQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/handle-disk-pressure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handle disk pressure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/handle-stale-writer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handle a stale writer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/handle-object-corruption/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Handle object corruption
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/recover-control-plane-outage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recover from a control-plane outage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/recover-postgres-failover/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recover from a PostgreSQL failover
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/recover-object-store-outage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recover from an object-store outage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/recover-host-loss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recover from host loss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/recover-interrupted-checkpoint/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Recover an interrupted checkpoint
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Develop
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Develop
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/build-and-package/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build and package
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/run-the-test-suite/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Run the test suite
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../how-to/contribute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contribute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/awcctl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    awcctl CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/awcd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    awcd host daemon
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/awc-control/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    awc-control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/awc-worker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    awc-worker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../environment-variables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/rest-v1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API (v1)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/grpc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    gRPC services
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data model
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identifiers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-digests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object digests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Object digests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#digest-domain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Digest domain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tenant-scoped-content-addressing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tenant-scoped content addressing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-kinds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object kinds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FILE manifest
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tree-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TREE manifest
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#snapshot-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SNAPSHOT manifest
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SNAPSHOT manifest">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#snapshot-closure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Snapshot closure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#format-versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Format versioning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#normalization-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Normalization policies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#snapshot-record-control-plane" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Snapshot record (control plane)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workspace-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workspace record
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#writer-lease-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Writer lease record
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mount-session-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mount session record
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mount-ticket" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mount ticket
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#patch-bundle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Patch bundle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-graph-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object-graph limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../on-disk-format/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    On-disk format
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database-schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metrics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../error-codes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../retention-and-gc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Retention and garbage collection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kernel-compatibility/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kernel compatibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../systemd-units/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    systemd units
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../limits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Limits and quotas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fuzz-targets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fuzz targets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../golden-vectors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Golden vectors
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../explanation/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Explanation
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Explanation
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/what-is-awc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What is AWC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/content-addressing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Content addressing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/overlay-cache-singleflight/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overlay, cache, and singleflight
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/durability-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    The durability model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/fencing-and-split-brain/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fencing and split-brain
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/economics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Economics and cost model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/security-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/lifecycle-states/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lifecycle states
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/normalization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Metadata normalization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/scope-discipline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scope discipline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/measuring-awc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Measuring AWC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/design-decisions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design decisions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../explanation/reference-path-correctness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference-path correctness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#identifiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identifiers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-digests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object digests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Object digests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#digest-domain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Digest domain
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tenant-scoped-content-addressing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tenant-scoped content addressing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-kinds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object kinds
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FILE manifest
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tree-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TREE manifest
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#snapshot-manifest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SNAPSHOT manifest
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SNAPSHOT manifest">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#snapshot-closure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Snapshot closure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#format-versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Format versioning
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#normalization-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Normalization policies
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#snapshot-record-control-plane" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Snapshot record (control plane)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workspace-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workspace record
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#writer-lease-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Writer lease record
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mount-session-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mount session record
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mount-ticket" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mount ticket
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#patch-bundle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Patch bundle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-graph-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object-graph limits
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Overview
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Reference
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<!--
+The AWC data model: identifiers, object digests, object kinds, manifest schemas, and the mutable workspace, lease, ticket, and patch-bundle records.
+-->
+
+<h1 id="data-model-reference">Data model reference<a class="headerlink" href="#data-model-reference" title="Permanent link">&para;</a></h1>
+<p>This page lists the identifiers, object kinds, manifest fields, and mutable
+control-plane records that make up AWC. Immutable object fields come from the
+object manifests. Mutable record columns come from the control-plane database
+rows and the API types.</p>
+<p>For the byte-level canonical CBOR encoding, see
+<a href="../on-disk-format/">On-disk format</a>. For the SQL schema, see
+<a href="../database-schema/">Database schema</a>.</p>
+<h2 id="identifiers">Identifiers<a class="headerlink" href="#identifiers" title="Permanent link">&para;</a></h2>
+<p>Human-facing resources use opaque, sortable identifiers of the form
+<code>&lt;prefix&gt;_&lt;ulid&gt;</code>. The ULID is 26 characters, case-insensitive, and monotonic.
+The prefix is fixed per resource kind.</p>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Prefix</th>
+<th>Identifier type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tenant</td>
+<td><code>ten_</code></td>
+<td><code>TenantId</code></td>
+</tr>
+<tr>
+<td>Project</td>
+<td><code>prj_</code></td>
+<td><code>ProjectId</code></td>
+</tr>
+<tr>
+<td>Snapshot</td>
+<td><code>snap_</code></td>
+<td><code>SnapshotId</code></td>
+</tr>
+<tr>
+<td>Workspace</td>
+<td><code>ws_</code></td>
+<td><code>WorkspaceId</code></td>
+</tr>
+<tr>
+<td>Writer lease</td>
+<td><code>lease_</code></td>
+<td><code>LeaseId</code></td>
+</tr>
+<tr>
+<td>Host</td>
+<td><code>host_</code></td>
+<td><code>HostId</code></td>
+</tr>
+<tr>
+<td>Import session</td>
+<td><code>import_</code></td>
+<td><code>ImportSessionId</code></td>
+</tr>
+<tr>
+<td>Mount session</td>
+<td><code>mount_</code></td>
+<td><code>MountSessionId</code></td>
+</tr>
+</tbody>
+</table>
+<p>A second <code>_</code> in the ULID portion is rejected. Each kind is a distinct type, so a
+<code>TenantId</code> never aliases a <code>ProjectId</code>. The mount-session prefix (<code>mount_</code>) is
+not in the standard prefix list; it is defined separately.</p>
+<p>Content objects do not use these identifiers. They are named by digests.</p>
+<h2 id="object-digests">Object digests<a class="headerlink" href="#object-digests" title="Permanent link">&para;</a></h2>
+<p>An immutable object is named by an algorithm-qualified digest.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>sha256:&lt;64 lowercase hexadecimal characters&gt;
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Canonical algorithm</td>
+<td><code>sha256</code></td>
+</tr>
+<tr>
+<td>Raw length</td>
+<td>32 bytes</td>
+</tr>
+<tr>
+<td>Wire form</td>
+<td><code>&lt;algorithm&gt;:&lt;hex&gt;</code>, lowercase hex only</td>
+</tr>
+<tr>
+<td>Supported algorithms</td>
+<td><code>Sha256</code> only</td>
+</tr>
+</tbody>
+</table>
+<p>The algorithm enum exists so keys and digests can migrate later without a format
+break. The MVP writes and reads <code>sha256</code> only. Uppercase hex is rejected on
+parse.</p>
+<h3 id="digest-domain">Digest domain<a class="headerlink" href="#digest-domain" title="Permanent link">&para;</a></h3>
+<p>A digest is computed over a kind-specific domain:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>SHA256("awc:v1:" || object_kind || 0x00 || canonical_payload)
+</span></code></pre></div>
+<ul>
+<li><code>object_kind</code> is the ASCII label <code>BLOB</code>, <code>FILE</code>, <code>TREE</code>, or <code>SNAPSHOT</code>.</li>
+<li><code>0x00</code> is one separator byte.</li>
+<li>For <code>BLOB</code>, <code>canonical_payload</code> is the raw blob bytes.</li>
+<li>For <code>FILE</code>, <code>TREE</code>, and <code>SNAPSHOT</code>, <code>canonical_payload</code> is the deterministic
+  canonical CBOR encoding.</li>
+</ul>
+<p>Object kind is part of the hashed domain. The same byte payload cannot be
+interpreted as two kinds.</p>
+<h3 id="tenant-scoped-content-addressing">Tenant-scoped content addressing<a class="headerlink" href="#tenant-scoped-content-addressing" title="Permanent link">&para;</a></h3>
+<p>Content deduplication is scoped to a tenant. Identical bytes share one object
+within a tenant, never across tenants.</p>
+<p>The canonical remote object key is:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>cas/v1/tenants/&lt;tenant-id&gt;/&lt;algorithm&gt;/&lt;first-2&gt;/&lt;next-2&gt;/&lt;digest&gt;
+</span></code></pre></div>
+<p>For example:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>cas/v1/tenants/ten_01.../sha256/ab/cd/abcd1234...
+</span></code></pre></div>
+<p><code>&lt;first-2&gt;</code> and <code>&lt;next-2&gt;</code> are the first two and next two hex characters of the
+digest. A digest collision across tenants does not create a shared object or a
+shared cache key.</p>
+<p>The host-local cache uses the same tenant scoping:</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Singleflight</td>
+<td><code>(tenant_id, digest)</code></td>
+</tr>
+<tr>
+<td>Cache index</td>
+<td>primary key <code>(tenant_id, digest)</code></td>
+</tr>
+<tr>
+<td>On-disk path</td>
+<td><code>objects/&lt;tenant-id&gt;/sha256/&lt;first-2&gt;/&lt;next-2&gt;/&lt;hex&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<p>The cache index also records <code>object_kind</code> and validates it, although the digest
+domain already includes the kind.</p>
+<h2 id="object-kinds">Object kinds<a class="headerlink" href="#object-kinds" title="Permanent link">&para;</a></h2>
+<p>The CAS stores four immutable object kinds.</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Label</th>
+<th>Holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BLOB</code></td>
+<td><code>BLOB</code></td>
+<td>Raw file or chunk bytes</td>
+</tr>
+<tr>
+<td><code>FILE</code></td>
+<td><code>FILE</code></td>
+<td>File metadata and references to one or more blobs</td>
+</tr>
+<tr>
+<td><code>TREE</code></td>
+<td><code>TREE</code></td>
+<td>Sorted directory entries</td>
+</tr>
+<tr>
+<td><code>SNAPSHOT</code></td>
+<td><code>SNAPSHOT</code></td>
+<td>Immutable root metadata and provenance</td>
+</tr>
+</tbody>
+</table>
+<p>A <code>BLOB</code> payload is unstructured bytes. Compression at rest is allowed only when
+the object-store key still names the digest of the uncompressed bytes and the
+stored envelope records the codec. The MVP default is no application compression
+for source-code-sized blobs.</p>
+<h2 id="file-manifest">FILE manifest<a class="headerlink" href="#file-manifest" title="Permanent link">&para;</a></h2>
+<p>A file is stored whole when it is smaller than the inline threshold, and split
+into fixed chunks otherwise.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>version</code></td>
+<td><code>uint</code></td>
+<td>Always <code>FORMAT_VERSION</code> (<code>1</code>)</td>
+</tr>
+<tr>
+<td><code>size</code></td>
+<td><code>uint</code></td>
+<td>Logical file size in bytes</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td><code>uint</code></td>
+<td>POSIX mode bits</td>
+</tr>
+<tr>
+<td><code>mtime_ns</code></td>
+<td><code>int \| null</code></td>
+<td>Nanoseconds since the epoch, or null</td>
+</tr>
+<tr>
+<td><code>chunks</code></td>
+<td>array</td>
+<td>One or more chunk entries</td>
+</tr>
+<tr>
+<td><code>content_digest</code></td>
+<td>text</td>
+<td>Plain SHA-256 of the complete logical bytes</td>
+</tr>
+</tbody>
+</table>
+<p>Chunk fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>offset</code></td>
+<td><code>uint</code></td>
+<td>Byte offset within the logical file</td>
+</tr>
+<tr>
+<td><code>length</code></td>
+<td><code>uint32</code></td>
+<td>Chunk length in bytes</td>
+</tr>
+<tr>
+<td><code>digest</code></td>
+<td>text</td>
+<td>Domain-separated blob digest of the chunk bytes</td>
+</tr>
+</tbody>
+</table>
+<p>Layout rules:</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>INLINE_THRESHOLD_BYTES</code></td>
+<td>8 MiB</td>
+<td>Files with <code>size &lt;</code> threshold use one blob reference</td>
+</tr>
+<tr>
+<td><code>CHUNK_SIZE_BYTES</code></td>
+<td>4 MiB</td>
+<td>Files at or above the threshold split into fixed chunks</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Chunks are contiguous, non-overlapping, start at offset zero, and sum to
+  <code>size</code>.</li>
+<li>The final chunk may be smaller.</li>
+<li>An empty file is one zero-length chunk that references an empty blob.</li>
+<li>Each <code>chunks[].digest</code> is a domain-separated blob digest.</li>
+<li><code>content_digest</code> is the plain SHA-256 of the logical bytes. It is independent
+  of chunking.</li>
+<li>Content-defined chunking is deferred. The format permits it later.</li>
+</ul>
+<h2 id="tree-manifest">TREE manifest<a class="headerlink" href="#tree-manifest" title="Permanent link">&para;</a></h2>
+<p>A tree is a sorted list of directory entries.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>version</code></td>
+<td><code>uint</code></td>
+<td>Always <code>FORMAT_VERSION</code> (<code>1</code>)</td>
+</tr>
+<tr>
+<td><code>entries</code></td>
+<td>array</td>
+<td>Sorted, de-duplicated entries</td>
+</tr>
+</tbody>
+</table>
+<p>Tree entry fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>bytes</td>
+<td>Raw filename bytes; no UTF-8 assumption</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>text</td>
+<td><code>FILE</code>, <code>TREE</code>, or <code>SYMLINK</code></td>
+</tr>
+<tr>
+<td><code>digest</code></td>
+<td>text</td>
+<td>Digest of the referenced object</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td><code>uint</code></td>
+<td>POSIX mode bits</td>
+</tr>
+<tr>
+<td><code>symlink_target</code></td>
+<td>bytes | null</td>
+<td>Raw target bytes; only for <code>SYMLINK</code></td>
+</tr>
+</tbody>
+</table>
+<p>Rules:</p>
+<ul>
+<li>Entries are sorted lexicographically by raw name bytes.</li>
+<li>A name must be non-empty. A name must not contain <code>/</code> (<code>0x2f</code>) or NUL
+  (<code>0x00</code>).</li>
+<li>Duplicate names are invalid.</li>
+<li>A <code>SYMLINK</code> entry must carry a non-empty <code>symlink_target</code>. The target is
+  stored verbatim and is never followed during import.</li>
+<li>Directory identity depends on entry names, types, metadata, and child
+  digests.</li>
+</ul>
+<p>A <code>SYMLINK</code> entry references a <code>BLOB</code> object that carries the link target.</p>
+<h2 id="snapshot-manifest">SNAPSHOT manifest<a class="headerlink" href="#snapshot-manifest" title="Permanent link">&para;</a></h2>
+<p>A snapshot pins a root tree and records provenance and aggregate counters.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>version</code></td>
+<td><code>uint</code></td>
+<td>Always <code>FORMAT_VERSION</code> (<code>1</code>)</td>
+</tr>
+<tr>
+<td><code>root_tree</code></td>
+<td>text</td>
+<td>Digest of the root <code>TREE</code> manifest</td>
+</tr>
+<tr>
+<td><code>parent_snapshot</code></td>
+<td>text | null</td>
+<td>Parent snapshot digest, or null</td>
+</tr>
+<tr>
+<td><code>logical_bytes</code></td>
+<td><code>uint</code></td>
+<td>Total logical bytes reachable from the root tree</td>
+</tr>
+<tr>
+<td><code>file_count</code></td>
+<td><code>uint</code></td>
+<td>Files reachable from the root tree</td>
+</tr>
+<tr>
+<td><code>tree_count</code></td>
+<td><code>uint</code></td>
+<td>Trees reachable from the root tree</td>
+</tr>
+<tr>
+<td><code>normalization_policy</code></td>
+<td>text</td>
+<td><code>source-normalized</code> or <code>environment-preserving</code></td>
+</tr>
+<tr>
+<td><code>source</code></td>
+<td>map</td>
+<td>Provenance; see below</td>
+</tr>
+<tr>
+<td><code>created_by</code></td>
+<td>text</td>
+<td>Opaque principal reference</td>
+</tr>
+<tr>
+<td><code>created_at</code></td>
+<td><code>int</code></td>
+<td>Unix nanoseconds since the epoch</td>
+</tr>
+<tr>
+<td><code>labels</code></td>
+<td>map</td>
+<td>Free-form <code>text</code> to <code>text</code>; sorted by key</td>
+</tr>
+</tbody>
+</table>
+<p><code>source</code> sub-fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>type</code></td>
+<td>text</td>
+<td><code>directory</code>, <code>git</code>, <code>tar</code>, or <code>checkpoint</code></td>
+</tr>
+<tr>
+<td><code>locator</code></td>
+<td>text | null</td>
+<td>Source path or URL</td>
+</tr>
+<tr>
+<td><code>immutable_revision</code></td>
+<td>text | null</td>
+<td>Immutable revision, for example a Git commit</td>
+</tr>
+</tbody>
+</table>
+<p>The snapshot content digest excludes mutable control-plane aliases and retention
+state. Human-readable names point to a snapshot record. They are not part of
+content identity.</p>
+<h3 id="snapshot-closure">Snapshot closure<a class="headerlink" href="#snapshot-closure" title="Permanent link">&para;</a></h3>
+<p>A snapshot may enter <code>READY</code> only when every object reachable from its root
+manifest is present and valid in the tenant CAS. The graph validator walks the
+snapshot, checks object kinds, and confirms that <code>logical_bytes</code>,
+<code>file_count</code>, and <code>tree_count</code> match the traversed graph.</p>
+<h2 id="format-versioning">Format versioning<a class="headerlink" href="#format-versioning" title="Permanent link">&para;</a></h2>
+<p>Every serialized manifest includes a <code>version</code> field.</p>
+<table>
+<thead>
+<tr>
+<th>Constant</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FORMAT_VERSION</code></td>
+<td><code>1</code></td>
+<td>Alias for the current write version</td>
+</tr>
+<tr>
+<td><code>CURRENT_WRITE_VERSION</code></td>
+<td><code>1</code></td>
+<td>Version every new manifest is written at</td>
+</tr>
+<tr>
+<td><code>SUPPORTED_READ_VERSIONS</code></td>
+<td><code>[1]</code></td>
+<td>Versions a new daemon must read</td>
+</tr>
+<tr>
+<td><code>RETIRED_VERSIONS</code></td>
+<td><code>[]</code></td>
+<td>Versions no longer read</td>
+</tr>
+</tbody>
+</table>
+<p>A decoder accepts only a supported, non-retired version. Unknown optional
+fields are ignored so newer formats stay decodable. The digest domain prefix
+<code>awc:v1:</code> carries its own version tag, so the hash algorithm or structure can
+migrate without ambiguity with existing objects.</p>
+<h2 id="normalization-policies">Normalization policies<a class="headerlink" href="#normalization-policies" title="Permanent link">&para;</a></h2>
+<p>Snapshot creation must declare one normalization policy. The wire form is
+kebab-case.</p>
+<table>
+<thead>
+<tr>
+<th>Policy</th>
+<th>Wire value</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SourceNormalized</code></td>
+<td><code>source-normalized</code></td>
+<td>Deterministic reuse for source repositories. Normalizes UID and GID to zero, normalizes mtime to zero, clears setuid and setgid bits, removes unsupported xattrs.</td>
+</tr>
+<tr>
+<td><code>EnvironmentPreserving</code></td>
+<td><code>environment-preserving</code></td>
+<td>Prepared dependency and build environments. Preserves mtime. Normalizes UID and GID to zero unless configured. Clears setuid and setgid bits by default.</td>
+</tr>
+</tbody>
+</table>
+<p>The selected policy is recorded in snapshot provenance.</p>
+<h2 id="snapshot-record-control-plane">Snapshot record (control plane)<a class="headerlink" href="#snapshot-record-control-plane" title="Permanent link">&para;</a></h2>
+<p>The database row for a snapshot:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>String</code></td>
+<td><code>snap_&lt;ulid&gt;</code></td>
+</tr>
+<tr>
+<td><code>tenant_id</code></td>
+<td><code>String</code></td>
+<td><code>ten_&lt;ulid&gt;</code></td>
+</tr>
+<tr>
+<td><code>project_id</code></td>
+<td><code>String</code></td>
+<td><code>prj_&lt;ulid&gt;</code></td>
+</tr>
+<tr>
+<td><code>manifest_digest</code></td>
+<td><code>String</code></td>
+<td>Digest of the <code>SNAPSHOT</code> object</td>
+</tr>
+<tr>
+<td><code>root_tree_digest</code></td>
+<td><code>String</code></td>
+<td>Digest of the root <code>TREE</code> object</td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td><code>String</code></td>
+<td>Snapshot state wire value; see below</td>
+</tr>
+<tr>
+<td><code>logical_bytes</code></td>
+<td><code>i64</code></td>
+<td>Denormalized from the manifest</td>
+</tr>
+<tr>
+<td><code>file_count</code></td>
+<td><code>i64</code></td>
+<td>Denormalized from the manifest</td>
+</tr>
+<tr>
+<td><code>parent_snapshot_id</code></td>
+<td><code>String?</code></td>
+<td>Parent snapshot record id</td>
+</tr>
+<tr>
+<td><code>source_type</code></td>
+<td><code>String</code></td>
+<td><code>directory</code>, <code>git</code>, <code>tar</code>, or <code>checkpoint</code></td>
+</tr>
+<tr>
+<td><code>normalization_policy</code></td>
+<td><code>String</code></td>
+<td><code>source-normalized</code> or <code>environment-preserving</code></td>
+</tr>
+<tr>
+<td><code>created_by</code></td>
+<td><code>String</code></td>
+<td>Principal reference</td>
+</tr>
+<tr>
+<td><code>created_at</code></td>
+<td><code>DateTime</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>labels</code></td>
+<td>jsonb</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Snapshot state values:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>UPLOADING</code></td>
+<td>Object upload is in progress</td>
+</tr>
+<tr>
+<td><code>VALIDATING</code></td>
+<td>Objects uploaded; integrity checks are running</td>
+</tr>
+<tr>
+<td><code>READY</code></td>
+<td>Immutable and usable as a workspace base</td>
+</tr>
+<tr>
+<td><code>FAILED</code></td>
+<td>Validation or publication failed</td>
+</tr>
+<tr>
+<td><code>DELETING</code></td>
+<td>A delete is in progress</td>
+</tr>
+<tr>
+<td><code>DELETED</code></td>
+<td>The snapshot and its objects are removed</td>
+</tr>
+<tr>
+<td><code>DEGRADED</code></td>
+<td>Readable, but some backing objects are unavailable</td>
+</tr>
+</tbody>
+</table>
+<p>Only <code>READY</code> snapshots may be used as new workspace bases.</p>
+<h2 id="workspace-record">Workspace record<a class="headerlink" href="#workspace-record" title="Permanent link">&para;</a></h2>
+<p>The database row for a workspace:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>String</code></td>
+<td><code>ws_&lt;ulid&gt;</code></td>
+</tr>
+<tr>
+<td><code>tenant_id</code></td>
+<td><code>String</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>project_id</code></td>
+<td><code>String</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>base_snapshot_id</code></td>
+<td><code>String</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>head_snapshot_id</code></td>
+<td><code>String</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td><code>i64</code></td>
+<td>Optimistic concurrency</td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td><code>String</code></td>
+<td>Workspace state wire value</td>
+</tr>
+<tr>
+<td><code>writer_lease_generation</code></td>
+<td><code>i64</code></td>
+<td>Current fencing generation</td>
+</tr>
+<tr>
+<td><code>ttl_expires_at</code></td>
+<td><code>DateTime</code></td>
+<td>TTL expiry time</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td><code>String?</code></td>
+<td>Control-plane alias; not part of content identity</td>
+</tr>
+<tr>
+<td><code>created_by</code></td>
+<td><code>String</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>created_at</code></td>
+<td><code>DateTime</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>updated_at</code></td>
+<td><code>DateTime</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>labels</code></td>
+<td>jsonb</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>A fork creates a workspace whose <code>base_snapshot_id</code> and <code>head_snapshot_id</code>
+initially reference the same snapshot. The <code>name</code> column is a control-plane
+alias and is not part of content identity.</p>
+<p>Workspace state values:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CREATING</code></td>
+<td>Being created from its base snapshot</td>
+</tr>
+<tr>
+<td><code>FAILED</code></td>
+<td>Creation failed</td>
+</tr>
+<tr>
+<td><code>IDLE</code></td>
+<td>Created and not mounted</td>
+</tr>
+<tr>
+<td><code>MOUNTED</code></td>
+<td>Mounted on at least one host</td>
+</tr>
+<tr>
+<td><code>CHECKPOINTING</code></td>
+<td>A checkpoint is being published</td>
+</tr>
+<tr>
+<td><code>EXPIRING</code></td>
+<td>TTL is expiring</td>
+</tr>
+<tr>
+<td><code>DELETED</code></td>
+<td>Removed from the control plane</td>
+</tr>
+</tbody>
+</table>
+<h2 id="writer-lease-record">Writer lease record<a class="headerlink" href="#writer-lease-record" title="Permanent link">&para;</a></h2>
+<p>The database row for a writer lease:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>String</code></td>
+<td><code>lease_&lt;ulid&gt;</code></td>
+</tr>
+<tr>
+<td><code>workspace_id</code></td>
+<td><code>String</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>generation</code></td>
+<td><code>i64</code></td>
+<td>Monotonic fencing token</td>
+</tr>
+<tr>
+<td><code>host_id</code></td>
+<td><code>String</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>mount_session_id</code></td>
+<td><code>String?</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td><code>String</code></td>
+<td>Lease state wire value</td>
+</tr>
+<tr>
+<td><code>granted_at</code></td>
+<td><code>DateTime</code></td>
+<td>Time the lease was granted</td>
+</tr>
+<tr>
+<td><code>expires_at</code></td>
+<td><code>DateTime</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>released_at</code></td>
+<td><code>DateTime?</code></td>
+<td>Time the lease was released, if it was</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>generation</code> is a monotonically increasing fencing token. A host with an
+older generation may keep local bytes but must not publish a checkpoint.</p>
+<p>Lease state values:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Live</th>
+<th>Can publish</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ISSUED</code></td>
+<td>yes</td>
+<td>no</td>
+<td>Issued, not yet claimed by a mount</td>
+</tr>
+<tr>
+<td><code>ACTIVE</code></td>
+<td>yes</td>
+<td>yes</td>
+<td>Held by a mounted writer</td>
+</tr>
+<tr>
+<td><code>RELEASING</code></td>
+<td>yes</td>
+<td>yes</td>
+<td>Holder is releasing and publishing final state</td>
+</tr>
+<tr>
+<td><code>RELEASED</code></td>
+<td>no</td>
+<td>no</td>
+<td>Released cleanly</td>
+</tr>
+<tr>
+<td><code>EXPIRED</code></td>
+<td>no</td>
+<td>no</td>
+<td>Reached lifetime without release</td>
+</tr>
+<tr>
+<td><code>REVOKED</code></td>
+<td>no</td>
+<td>no</td>
+<td>Forcibly revoked by the control plane</td>
+</tr>
+</tbody>
+</table>
+<p>Only an <code>ACTIVE</code> or <code>RELEASING</code> lease may advance the workspace head.</p>
+<h2 id="mount-session-record">Mount session record<a class="headerlink" href="#mount-session-record" title="Permanent link">&para;</a></h2>
+<p>The database row for a mount session:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>String</code></td>
+<td><code>mount_&lt;ulid&gt;</code></td>
+</tr>
+<tr>
+<td><code>workspace_id</code></td>
+<td><code>String</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>host_id</code></td>
+<td><code>String</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td><code>String</code></td>
+<td><code>READ_ONLY</code> or <code>READ_WRITE</code></td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td><code>String</code></td>
+<td>Mount session state wire value</td>
+</tr>
+<tr>
+<td><code>lease_id</code></td>
+<td><code>String?</code></td>
+<td>Set for a writable mount</td>
+</tr>
+<tr>
+<td><code>root_snapshot_digest</code></td>
+<td><code>String</code></td>
+<td>Digest of the sealed root</td>
+</tr>
+<tr>
+<td><code>target_path</code></td>
+<td><code>String</code></td>
+<td>Configured mount target path</td>
+</tr>
+<tr>
+<td><code>started_at</code></td>
+<td><code>DateTime</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>ended_at</code></td>
+<td><code>DateTime?</code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Mount session state values:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>REQUESTED</code></td>
+<td>Received, not yet authorized</td>
+</tr>
+<tr>
+<td><code>AUTHORIZED</code></td>
+<td>Authorized, preparation not started</td>
+</tr>
+<tr>
+<td><code>PREPARING</code></td>
+<td>FUSE and overlays are being prepared</td>
+</tr>
+<tr>
+<td><code>MOUNTED</code></td>
+<td>Live and serving I/O</td>
+</tr>
+<tr>
+<td><code>UNMOUNTING</code></td>
+<td>Unmount in progress</td>
+</tr>
+<tr>
+<td><code>CLOSED</code></td>
+<td>Closed cleanly (terminal)</td>
+</tr>
+<tr>
+<td><code>FAILED</code></td>
+<td>Mount failed or was lost (terminal)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="mount-ticket">Mount ticket<a class="headerlink" href="#mount-ticket" title="Permanent link">&para;</a></h2>
+<p>A mount ticket is a short-lived, signed capability. The typed API struct is
+<code>MountTicket</code>. The signed payload is <code>MountTicketClaims</code>.</p>
+<p><code>MountTicket</code> fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ticket_id</code></td>
+<td><code>String</code></td>
+<td>Opaque ticket id</td>
+</tr>
+<tr>
+<td><code>tenant_id</code></td>
+<td><code>TenantId</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>workspace_id</code></td>
+<td><code>WorkspaceId</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>snapshot_id</code></td>
+<td><code>SnapshotId</code></td>
+<td>Snapshot the mount is sealed against</td>
+</tr>
+<tr>
+<td><code>root_digest</code></td>
+<td><code>Digest</code></td>
+<td>Content digest of the sealed root tree</td>
+</tr>
+<tr>
+<td><code>host_id</code></td>
+<td><code>HostId</code></td>
+<td>The single audience host</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td><code>MountMode</code></td>
+<td><code>READ_ONLY</code> or <code>READ_WRITE</code></td>
+</tr>
+<tr>
+<td><code>lease_generation</code></td>
+<td><code>u64?</code></td>
+<td>Fencing generation for <code>READ_WRITE</code>; null for read-only</td>
+</tr>
+<tr>
+<td><code>target_policy</code></td>
+<td><code>TargetPolicy</code></td>
+<td>Allowed bind roots</td>
+</tr>
+<tr>
+<td><code>issued_at</code></td>
+<td><code>Timestamp</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>expires_at</code></td>
+<td><code>Timestamp</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>nonce</code></td>
+<td><code>String</code></td>
+<td>Single-use replay defeat</td>
+</tr>
+<tr>
+<td><code>protocol_version</code></td>
+<td><code>u32</code></td>
+<td>Internal protocol version</td>
+</tr>
+<tr>
+<td><code>signed_ticket</code></td>
+<td><code>String</code></td>
+<td>Opaque, server-signed token for <code>MountWorkspace</code></td>
+</tr>
+</tbody>
+</table>
+<p>The signed claims (<code>MountTicketClaims</code>) carry the same identity fields and add
+sealing for checkpoint safety:</p>
+<table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>snapshot_manifest_digest</code></td>
+<td><code>Digest?</code></td>
+<td>Digest of the sealed <code>SNAPSHOT</code> manifest</td>
+</tr>
+<tr>
+<td><code>lease_id</code></td>
+<td><code>String?</code></td>
+<td>Control-plane lease identity</td>
+</tr>
+<tr>
+<td><code>mount_session_id</code></td>
+<td><code>String?</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>workspace_version</code></td>
+<td><code>u64?</code></td>
+<td>Optimistic version sealed into the capability</td>
+</tr>
+<tr>
+<td><code>execution_cgroup</code></td>
+<td><code>String?</code></td>
+<td>Cgroup path for quiesce</td>
+</tr>
+</tbody>
+</table>
+<p>Tickets should use Ed25519 signatures and must be verifiable by <code>awcd</code> without a
+synchronous control-plane call. The persisted ticket row stores <code>signed_ticket</code>
+and does not store <code>root_digest</code>. The root digest lives on the typed struct, the
+signed claims, and the mount session row.</p>
+<h2 id="patch-bundle">Patch bundle<a class="headerlink" href="#patch-bundle" title="Permanent link">&para;</a></h2>
+<p>A patch bundle describes a delta against a declared base snapshot.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>version</code></td>
+<td><code>u32</code></td>
+<td><code>PATCH_BUNDLE_VERSION</code> (<code>1</code>)</td>
+</tr>
+<tr>
+<td><code>base_snapshot_digest</code></td>
+<td><code>Digest?</code></td>
+<td>Base the delta is computed against</td>
+</tr>
+<tr>
+<td><code>result_snapshot_digest</code></td>
+<td><code>Digest?</code></td>
+<td>Result snapshot</td>
+</tr>
+<tr>
+<td><code>changes</code></td>
+<td>array</td>
+<td>Ordered <code>PatchChange</code> entries</td>
+</tr>
+<tr>
+<td><code>embedded_blobs</code></td>
+<td>array</td>
+<td>Complete binary payloads</td>
+</tr>
+<tr>
+<td><code>provenance</code></td>
+<td><code>ExportProvenance</code></td>
+<td>Free-form export provenance</td>
+</tr>
+</tbody>
+</table>
+<p><code>PatchChange</code> variants:</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Carries</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>AddFile</code></td>
+<td><code>path</code>, <code>mode</code>, <code>digest</code>, <code>content</code></td>
+</tr>
+<tr>
+<td><code>ModifyFile</code></td>
+<td><code>path</code>, <code>old_mode</code>, <code>new_mode</code>, <code>old_digest</code>, <code>new_digest</code>, <code>content</code></td>
+</tr>
+<tr>
+<td><code>ChangeMode</code></td>
+<td><code>path</code>, <code>old_mode</code>, <code>new_mode</code></td>
+</tr>
+<tr>
+<td><code>DeleteFile</code></td>
+<td><code>path</code>, <code>mode</code></td>
+</tr>
+<tr>
+<td><code>AddDir</code></td>
+<td><code>path</code>, <code>mode</code></td>
+</tr>
+<tr>
+<td><code>DeleteDir</code></td>
+<td><code>path</code></td>
+</tr>
+<tr>
+<td><code>AddSymlink</code></td>
+<td><code>path</code>, <code>target</code></td>
+</tr>
+<tr>
+<td><code>ModifySymlink</code></td>
+<td><code>path</code>, <code>old_target</code>, <code>new_target</code></td>
+</tr>
+<tr>
+<td><code>DeleteSymlink</code></td>
+<td><code>path</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>FileContent</code> representation:</p>
+<table>
+<thead>
+<tr>
+<th>Variant</th>
+<th>Carries</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Text</code></td>
+<td><code>unified_diff</code></td>
+</tr>
+<tr>
+<td><code>Binary</code></td>
+<td><code>blob_digest</code> (reference into <code>embedded_blobs</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><code>EmbeddedBlob</code> fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>digest</code></td>
+<td><code>Digest</code></td>
+<td><code>FILE</code> manifest digest the payload belongs to</td>
+</tr>
+<tr>
+<td><code>size</code></td>
+<td><code>u64</code></td>
+<td>Logical size in bytes</td>
+</tr>
+<tr>
+<td><code>data</code></td>
+<td>bytes</td>
+<td>Raw payload</td>
+</tr>
+</tbody>
+</table>
+<p><code>ChangeMode</code>, <code>ModifySymlink</code>, and <code>DeleteSymlink</code> are separate operations
+rather than implicit.</p>
+<h2 id="object-graph-limits">Object-graph limits<a class="headerlink" href="#object-graph-limits" title="Permanent link">&para;</a></h2>
+<p>The graph validator enforces structural ceilings on an untrusted graph.</p>
+<table>
+<thead>
+<tr>
+<th>Limit</th>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MAX_OBJECT_BYTES</code></td>
+<td>64 MiB</td>
+<td>Hard cap on a single object payload</td>
+</tr>
+<tr>
+<td><code>MAX_TREE_ENTRIES</code></td>
+<td>100,000</td>
+<td>Maximum entries in one tree</td>
+</tr>
+<tr>
+<td><code>MAX_TREE_DEPTH</code></td>
+<td>64</td>
+<td>Maximum tree nesting depth (root tree at depth 0)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="see-also">See also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../on-disk-format/">On-disk format</a> — canonical CBOR encoding and digest
+  domains.</li>
+<li><a href="../database-schema/">Database schema</a> — SQL tables and columns.</li>
+<li><a href="../limits/">Limits</a> — operational and per-object limits.</li>
+<li><a href="../../explanation/content-addressing/">Content addressing</a> — why tenant scope
+  is the deduplication boundary.</li>
+</ul>
+<h2 id="current-scope">Current scope<a class="headerlink" href="#current-scope" title="Permanent link">&para;</a></h2>
+<p>This page reflects the current build. The following items are specified but not
+yet implemented:</p>
+<ul>
+<li><strong>No second hash algorithm.</strong> Only <code>sha256</code> is implemented. No other algorithm
+  is wired in.</li>
+<li><strong>No content-defined chunking.</strong> Files split only at fixed 4 MiB boundaries.
+  Content-defined chunking is deferred.</li>
+<li><strong>No application-level blob compression envelope.</strong> The codec field is not
+  implemented; blobs are stored raw.</li>
+<li><strong>Hard links.</strong> The MVP may store hard links as independent file entries. It
+  does not preserve hard-link identity.</li>
+<li><strong><code>root_digest</code> on the ticket.</strong> <code>root_digest</code> is present on the ticket struct
+  and the signed claims. The persisted ticket row stores <code>signed_ticket</code>
+  instead and carries the root digest on the mount session row.</li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 13, 2026 21:50:12 UTC">August 13, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="August 12, 2026 18:40:47 UTC">August 12, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/nibzard/awc-docs" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.indexes", "navigation.top", "navigation.tracking", "navigation.path", "toc.follow", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
